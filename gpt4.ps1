@@ -13,7 +13,7 @@ function GPT4
     $listener = New-Object System.Net.Sockets.TcpListener([IPAddress]::Any, $Port)
     $listener.Start()
 
-    # Sinyal gönderme işlemi
+    # Sinyal gönderme işlemi ve dosya transferi
     while ($true)
     {
         $client = $listener.AcceptTcpClient()
@@ -42,6 +42,7 @@ function GPT4
 
         # 10 saniye bekleyip tekrar sinyal gönderiyoruz
         Start-Sleep -Seconds 10
+        continue
     }
 }
 
