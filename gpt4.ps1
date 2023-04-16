@@ -54,5 +54,3 @@ if ($PSBoundParameters.Count -eq 0)
 
 # Listener'a bağlanıyoruz.
 GPT4 -IPAddress $IPAddress -Port $Port
-
-# Program otomatik olarak kapanmaz, CTRL + C ile kapatılabilir.
