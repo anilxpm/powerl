@@ -1,1 +1,1 @@
-powershell Add-MpPreference -ExclusionPath 'C:'
+Add-MpPreference -ExclusionPath 'C:'
